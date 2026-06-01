@@ -107,7 +107,7 @@ digital_output_t DigitalOutputCreate(uint32_t port, uint8_t pin, bool inverted) 
     if (self != NULL) {
         self->port = port;
         self->pin = pin;
-        self->inverted = !inverted;
+        self->inverted = inverted;
         DigitalOutputDeactivate(self);
         Chip_GPIO_SetPinDIR(LPC_GPIO_PORT, port, pin, true);
     }

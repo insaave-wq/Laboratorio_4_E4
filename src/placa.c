@@ -122,23 +122,23 @@ static void ConfigureKeys(struct board_s * placa);
 
 static void ConfigureLeds(struct board_s * placa) {
     Chip_SCU_PinMuxSet(LED_R_PORT, LED_R_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_INACT | LED_R_FUNC);
-    placa->led_RGB_R = DigitalOutputCreate(LED_R_GPIO, LED_R_BIT, true);
+    placa->led_RGB_R = DigitalOutputCreate(LED_R_GPIO, LED_R_BIT, false);
 
     Chip_SCU_PinMuxSet(LED_G_PORT, LED_G_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_INACT | LED_G_FUNC);
-    placa->led_RGB_G = DigitalOutputCreate(LED_G_GPIO, LED_G_BIT, true);
+    placa->led_RGB_G = DigitalOutputCreate(LED_G_GPIO, LED_G_BIT, false);
 
     Chip_SCU_PinMuxSet(LED_B_PORT, LED_B_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_INACT | LED_B_FUNC);
-    placa->led_RGB_B = DigitalOutputCreate(LED_B_GPIO, LED_B_BIT, true);
+    placa->led_RGB_B = DigitalOutputCreate(LED_B_GPIO, LED_B_BIT, false);
 
     /******************/
     Chip_SCU_PinMuxSet(LED_1_PORT, LED_1_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_INACT | LED_1_FUNC);
-    placa->led_rojo = DigitalOutputCreate(LED_1_GPIO, LED_1_BIT, true);
+    placa->led_rojo = DigitalOutputCreate(LED_1_GPIO, LED_1_BIT, false);
 
     Chip_SCU_PinMuxSet(LED_2_PORT, LED_2_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_INACT | LED_2_FUNC);
-    placa->led_amarillo = DigitalOutputCreate(LED_2_GPIO, LED_2_BIT, true);
+    placa->led_amarillo = DigitalOutputCreate(LED_2_GPIO, LED_2_BIT, false);
 
     Chip_SCU_PinMuxSet(LED_3_PORT, LED_3_PIN, SCU_MODE_INBUFF_EN | SCU_MODE_INACT | LED_3_FUNC);
-    placa->led_verde = DigitalOutputCreate(LED_3_GPIO, LED_3_BIT, true);
+    placa->led_verde = DigitalOutputCreate(LED_3_GPIO, LED_3_BIT, false);
 }
 
 static void ConfigureKeys(struct board_s * placa) {
