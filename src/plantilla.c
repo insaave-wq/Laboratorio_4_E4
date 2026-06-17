@@ -26,13 +26,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 SPDX-License-Identifier: MIT
 *************************************************************************************************/
 
-/** @file main.c
- ** @brief Implementación principal del programa para controlar el poncho
+/** @file plantilla.c
+ ** @brief Plantilla para la creación de archivos de código fuente en lenguaje C
  **/
 
 /* === Headers files inclusions ================================================================ */
 
-#include "bsp.h"
+#include "plantilla.h"
 
 /* === Macros definitions ====================================================================== */
 
@@ -47,58 +47,5 @@ SPDX-License-Identifier: MIT
 /* === Private function definitions ============================================================ */
 
 /* === Public function implementation ========================================================== */
-
-int main(void) {
-    uint8_t in[4] = {6, 7, 6, 7};
-    uint16_t frecuencia = 0;
-
-    board_t placa = BoardCreate();
-
-    DisplayWriteBCD(placa->display, in, sizeof(in));
-
-    while (true) {
-        if (DigitalInputHasActivated(placa->accept) == true) {
-            if (frecuencia == 0) {
-                frecuencia = 100;
-            } else if (frecuencia == 100) {
-                frecuencia = 250;
-            } else {
-                frecuencia = 0;
-            }
-            DisplayFlashDigits(placa->display, 0, 3, frecuencia);
-        }
-
-        if (DigitalInputHasActivated(placa->cancel)) {
-            DisplayToggleDots(placa->display, 0, 3);
-        }
-
-        if (DigitalInputHasActivated(placa->F1)) {
-            in[3] = (in[3] + 1) % 10;
-            DisplayWriteBCD(placa->display, in, sizeof(in));
-        }
-
-        if (DigitalInputHasActivated(placa->F2)) {
-            in[2] = (in[2] + 1) % 10;
-            DisplayWriteBCD(placa->display, in, sizeof(in));
-        }
-
-        if (DigitalInputHasActivated(placa->F3)) {
-            in[1] = (in[1] + 1) % 10;
-            DisplayWriteBCD(placa->display, in, sizeof(in));
-        }
-
-        if (DigitalInputHasActivated(placa->F4)) {
-            in[0] = (in[0] + 1) % 10;
-            DisplayWriteBCD(placa->display, in, sizeof(in));
-        }
-
-        for (int i = 0; i < 660; i++) {
-            for (int delay = 0; delay < 1000; delay++) {
-                __asm("NOP");
-            }
-            DisplayRefresh(placa->display);
-        }
-    }
-};
 
 /* === End of documentation ==================================================================== */
