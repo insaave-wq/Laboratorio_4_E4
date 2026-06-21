@@ -64,6 +64,8 @@ bool RelojSetupCurrentTime(clock_t clock, const hora_t hora);
 
 bool RelojGetAlarm(clock_t clock, hora_t alarma);
 
+bool RelojSetupAlarm(clock_t clock, hora_t alarma);
+
 void RelojNewTick(clock_t clock);
 
 /* === End of conditional blocks =================================================================================== */

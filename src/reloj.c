@@ -43,7 +43,7 @@ SPDX-License-Identifier: MIT
 
 /* === Private function declarations =========================================================== */
 
-typedef void (*alarma_t)(hora_t hora);
+bool TimeIsValid(hora_t hora);
 
 /* === Private variable definitions ============================================================ */
 
@@ -61,6 +61,22 @@ struct clock_s {
 /* === Private function definitions ============================================================ */
 
 /* === Public function implementation ========================================================== */
+
+bool TimeIsValid(hora_t hora) {
+    if (hora[0] > 2)
+        return false;
+    if (hora[1] > 3)
+        return false;
+    if (hora[2] > 5)
+        return false;
+    if (hora[3] > 9)
+        return false;
+    if (hora[4] > 5)
+        return false;
+    if (hora[5] > 9)
+        return false;
+    return true;
+}
 
 clock_t RelojCreate(uint32_t ticks_per_second, void * alarm_handler) {
     static struct clock_s instance = {0};
@@ -82,9 +98,13 @@ bool RelojGetCurrentTime(clock_t clock, hora_t hora_actual) {
 }
 
 bool RelojSetupCurrentTime(clock_t clock, const hora_t nueva_hora) {
-    memcpy(clock->hora_actual, nueva_hora, sizeof(hora_t));
-    clock->time_is_valid = true;
-    return true;
+    if (TimeIsValid(nueva_hora)) {
+        memcpy(clock->hora_actual, nueva_hora, sizeof(hora_t));
+        clock->time_is_valid = true;
+    } else {
+        return false;
+    }
+    return clock->time_is_valid;
 }
 
 void RelojNewTick(clock_t clock) {
@@ -111,8 +131,15 @@ void RelojNewTick(clock_t clock) {
 bool RelojGetAlarm(clock_t clock, hora_t alarma) {
     if (clock->alarm_enabled) {
         memcpy(alarma, clock->alarma, sizeof(hora_t));
-        return alarma;
     }
-    return false;
+    return clock->alarm_enabled;
+}
+
+bool RelojSetupAlarm(clock_t clock, hora_t alarma) {
+    if (TimeIsValid(alarma)) {
+        memcpy(clock->alarma, alarma, sizeof(hora_t));
+        clock->alarm_enabled = true;
+    }
+    return clock->alarm_enabled;
 }
 /* === End of documentation ==================================================================== */

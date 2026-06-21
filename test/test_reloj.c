@@ -107,27 +107,20 @@ void test_avanza_diez_segundos(void) {
 void test_alarma_inicia_inactiva(void) {
     clock_t reloj;
     hora_t hora_alarma;
-    bool is_valid;
 
     reloj = RelojCreate(TICKS_PER_SECOND, NULL);
 
     TEST_ASSERT_FALSE(RelojGetAlarm(reloj, hora_alarma));
 }
 
-// void test_alarma_funciona(void) {
-//     clock_t reloj;
-//     hora_t alarma = {7, 7, 7, 7, 7, 7};
-//     bool es_valida;
+void test_setup_alarma(void) {
+    clock_t reloj;
+    hora_t hora_alarma = {1, 2, 3, 4, 5, 6};
+    static const hora_t EXPECTED_ALARM_1 = {1, 2, 3, 4, 5, 6};
+    reloj = RelojCreate(TICKS_PER_SECOND, NULL);
 
-//     reloj = RelojCreate(1, NULL);
-//     es_valida = RelojGetAlarm(reloj, alarma);
+    TEST_ASSERT_TRUE(RelojSetupAlarm(reloj, hora_alarma));
 
-//     TEST_ASSERT_FALSE(es_valida);
-
-//     // TEST_ASSERT_EQUAL_UINT8_ARRAY(expected, actual, size);
-//     TEST_ASSERT_EQUAL_UINT8_ARRAY(((hora_t){7, 7, 7, 7, 7, 7}), alarma, 6);
-// };
-
-/*
-
-*/
+    TEST_ASSERT_TRUE(RelojGetAlarm(reloj, hora_alarma));
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(EXPECTED_ALARM_1, hora_alarma, 6);
+}
