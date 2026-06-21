@@ -56,7 +56,7 @@ typedef uint8_t hora_t[6];
 
 /* === Public function declarations ================================================================================ */
 
-clock_t RelojCreate(unsigned int ticks_per_second, void * alarm_handler);
+clock_t RelojCreate(uint32_t ticks_per_second, void * alarm_handler);
 
 bool RelojGetCurrentTime(clock_t clock, hora_t hora);
 

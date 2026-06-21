@@ -48,9 +48,8 @@ SPDX-License-Identifier: MIT
 struct clock_s {
     bool time_is_valid;
     hora_t hora_actual;
-    hora_t alarma;
-    unsigned int ticks_count;
-    unsigned int ticks_per_second;
+    uint32_t ticks_count;
+    uint32_t ticks_per_second;
 };
 
 /* === Public variable definition  ============================================================= */
@@ -59,11 +58,13 @@ struct clock_s {
 
 /* === Public function implementation ========================================================== */
 
-clock_t RelojCreate(unsigned int ticks_per_second, void * alarm_handler) {
+clock_t RelojCreate(uint32_t ticks_per_second, void * alarm_handler) {
     static struct clock_s instance = {0};
 
     clock_t clock = &instance;
     clock->time_is_valid = false;
+    clock->ticks_per_second = ticks_per_second;
+    clock->ticks_count = 0;
     memset(clock->hora_actual, 0, sizeof(hora_t));
 
     return clock;
@@ -77,54 +78,39 @@ clock_t RelojCreate(unsigned int ticks_per_second, void * alarm_handler) {
     // }
     // printf("alarma %d", alarm_handler);
     // return reloj;
-};
+}
 
 bool RelojGetCurrentTime(clock_t clock, hora_t hora_actual) {
-    // if (!clock->time_is_valid) {
-    //     return false;
-    // }
     memcpy(hora_actual, clock->hora_actual, sizeof(hora_t));
     return clock->time_is_valid;
-};
+}
 
 bool RelojSetupCurrentTime(clock_t clock, const hora_t nueva_hora) {
     memcpy(clock->hora_actual, nueva_hora, sizeof(hora_t));
     clock->time_is_valid = true;
     return true;
-};
+}
 
 void RelojNewTick(clock_t clock) {
-    // if (clock->ticks_per_second % 3 == 0) {
-    //     if (clock->hora_actual[5] > 9) {
-    //         clock->hora_actual[5] = 0;
-    //         if (clock->hora_actual[4] > 5) {
-    //             clock->hora_actual[4] = 0;
-    //             if (clock->hora_actual[3] > 9) {
-    //                 clock->hora_actual[3] = 0;
-    //                 if (clock->hora_actual[2] > 5) {
-    //                     clock->hora_actual[2] = 0;
-    //                     if (clock->hora_actual[1] > 9) {
-    //                         clock->hora_actual[1] = 0;
-    //                         if (clock->hora_actual[0] == 2) {
-    //                             if (clock->hora_actual[1] > 3) {
-    //                                 clock->hora_actual[0] = 0;
-    //                             }
-    //                         }
-    //                         clock->hora_actual[0]++;
-    //                     }
-    //                     clock->hora_actual[1]++;
-    //                 }
-    //                 clock->hora_actual[2]++;
-    //             }
-    //             clock->hora_actual[3]++;
-    //         }
-    //         clock->hora_actual[4]++;
-    //     }
-    //     clock->hora_actual[5]++;
-    // }
+    clock->ticks_count = clock->ticks_count + 1;
+    if (clock->ticks_count >= clock->ticks_per_second) {
 
-    clock->hora_actual[5] = 7;
-};
+        uint32_t segundos = clock->hora_actual[0] * 3600 * 10 + clock->hora_actual[1] * 3600 +
+                            clock->hora_actual[2] * 60 * 10 + clock->hora_actual[3] * 60 + clock->hora_actual[4] * 10 +
+                            clock->hora_actual[5];
+        segundos = segundos + 1;
+        clock->ticks_count = 0;
+
+        clock->hora_actual[0] = (segundos / 3600 % 24) / 10;
+        clock->hora_actual[1] = (segundos / 3600 % 24) % 10;
+
+        clock->hora_actual[2] = (segundos / 60 % 60) / 10;
+        clock->hora_actual[3] = (segundos / 60 % 60) % 10;
+
+        clock->hora_actual[4] = (segundos % 60) / 10;
+        clock->hora_actual[5] = (segundos % 60) % 10;
+    }
+}
 
 // uint8_t RelojGetAlarm(clock_t clock, hora_t alarma) {
 //     memset(clock->alarma, alarma, sizeof(hora_t));
