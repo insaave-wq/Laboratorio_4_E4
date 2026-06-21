@@ -43,11 +43,15 @@ SPDX-License-Identifier: MIT
 
 /* === Private function declarations =========================================================== */
 
+typedef void (*alarma_t)(hora_t hora);
+
 /* === Private variable definitions ============================================================ */
 
 struct clock_s {
-    bool time_is_valid;
     hora_t hora_actual;
+    bool time_is_valid;
+    hora_t alarma;
+    bool alarm_enabled;
     uint32_t ticks_count;
     uint32_t ticks_per_second;
 };
@@ -63,21 +67,13 @@ clock_t RelojCreate(uint32_t ticks_per_second, void * alarm_handler) {
 
     clock_t clock = &instance;
     clock->time_is_valid = false;
+    clock->alarm_enabled = false;
     clock->ticks_per_second = ticks_per_second;
     clock->ticks_count = 0;
     memset(clock->hora_actual, 0, sizeof(hora_t));
+    memset(clock->alarma, 0, sizeof(hora_t));
 
     return clock;
-
-    // clock_t reloj;
-    // reloj = (clock_t)malloc(sizeof(struct clock_s));
-    // if (reloj) {
-    //     reloj->ticks_per_second = ticks_per_second;
-    //     RelojGetCurrentTime(reloj, reloj->hora_actual);
-    //     // memset(reloj->alarma, alarm_handler, sizeof(hora_t)); ??
-    // }
-    // printf("alarma %d", alarm_handler);
-    // return reloj;
 }
 
 bool RelojGetCurrentTime(clock_t clock, hora_t hora_actual) {
@@ -112,9 +108,11 @@ void RelojNewTick(clock_t clock) {
     }
 }
 
-// uint8_t RelojGetAlarm(clock_t clock, hora_t alarma) {
-//     memset(clock->alarma, alarma, sizeof(hora_t));
-//     return clock->alarma;
-//     // return false;
-// };
+bool RelojGetAlarm(clock_t clock, hora_t alarma) {
+    if (clock->alarm_enabled) {
+        memcpy(alarma, clock->alarma, sizeof(hora_t));
+        return alarma;
+    }
+    return false;
+}
 /* === End of documentation ==================================================================== */

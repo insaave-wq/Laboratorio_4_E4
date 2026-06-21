@@ -22,6 +22,14 @@
 #define TEN_SECONDS 10 * ONE_SECOND
 #endif
 
+#ifndef ALARMA_INACTIVA
+#define ALARMA_INACTIVA 0
+#endif
+
+#ifndef ALARMA_ACTIVA
+#define ALARMA_ACTIVA 1
+#endif
+
 static const hora_t DEFAULT_TIME = {0, 0, 0, 0, 0, 0};
 static const hora_t TEST_TIME = {1, 2, 3, 4, 5, 6};
 
@@ -29,6 +37,13 @@ void SimulateClockTicks(clock_t clock, uint32_t ticks) {
     for (int i = 0; i < ticks; i++) {
         RelojNewTick(clock);
     }
+}
+
+bool SimulateAlarm(hora_t hora, bool activa) {
+    if (activa) {
+        return true;
+    }
+    return false;
 }
 
 // Al iniciar el reloj está en 00:00 y con una hora invalida.
@@ -87,6 +102,16 @@ void test_avanza_diez_segundos(void) {
 
     TEST_ASSERT_TRUE(RelojGetCurrentTime(reloj, hora_actual));
     TEST_ASSERT_EQUAL_UINT8_ARRAY(EXPECTED_TIME_2, hora_actual, 6);
+}
+
+void test_alarma_inicia_inactiva(void) {
+    clock_t reloj;
+    hora_t hora_alarma;
+    bool is_valid;
+
+    reloj = RelojCreate(TICKS_PER_SECOND, NULL);
+
+    TEST_ASSERT_FALSE(RelojGetAlarm(reloj, hora_alarma));
 }
 
 // void test_alarma_funciona(void) {
