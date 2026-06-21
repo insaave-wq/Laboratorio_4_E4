@@ -124,3 +124,14 @@ void test_setup_alarma(void) {
     TEST_ASSERT_TRUE(RelojGetAlarm(reloj, hora_alarma));
     TEST_ASSERT_EQUAL_UINT8_ARRAY(EXPECTED_ALARM_1, hora_alarma, 6);
 }
+
+void test_ajuste_de_hora_invalida(void) {
+    clock_t reloj;
+    hora_t nueva_hora = {6, 2, 3, 4, 5, 6};
+    hora_t nueva_alarma = {6, 2, 3, 4, 5, 6};
+
+    reloj = RelojCreate(TICKS_PER_SECOND, NULL);
+
+    TEST_ASSERT_FALSE(RelojSetupCurrentTime(reloj, nueva_hora));
+    TEST_ASSERT_FALSE(RelojSetupAlarm(reloj, nueva_alarma));
+}
