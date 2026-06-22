@@ -66,6 +66,8 @@ bool RelojGetAlarm(clock_t clock, hora_t alarma);
 
 bool RelojSetupAlarm(clock_t clock, hora_t alarma);
 
+bool RelojGetAlarmStatus(clock_t clock);
+
 void RelojNewTick(clock_t clock);
 
 void RelojTogleAlarm(clock_t clock);

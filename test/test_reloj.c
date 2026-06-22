@@ -22,16 +22,13 @@
 #define TEN_SECONDS 10 * ONE_SECOND
 #endif
 
-#ifndef ALARMA_INACTIVA
-#define ALARMA_INACTIVA 0
-#endif
-
-#ifndef ALARMA_ACTIVA
-#define ALARMA_ACTIVA 1
+#ifndef ONE_DAY
+#define ONE_DAY 86400 * ONE_SECOND
 #endif
 
 static const hora_t DEFAULT_TIME = {0, 0, 0, 0, 0, 0};
 static const hora_t TEST_TIME = {1, 2, 3, 4, 5, 6};
+static bool estado_alarma = false;
 
 void SimulateClockTicks(clock_t clock, uint32_t ticks) {
     for (int i = 0; i < ticks; i++) {
@@ -39,11 +36,8 @@ void SimulateClockTicks(clock_t clock, uint32_t ticks) {
     }
 }
 
-bool SimulateAlarm(hora_t hora, bool activa) {
-    if (activa) {
-        return true;
-    }
-    return false;
+void SimulateAlarmHandler(void) {
+    estado_alarma = true;
 }
 
 // Al iniciar el reloj está en 00:00 y con una hora invalida.
@@ -138,13 +132,30 @@ void test_ajuste_de_hora_invalida(void) {
 
 void test_inhabilitar_alarma(void) {
     clock_t reloj;
-    hora_t hora_alarma = {1, 2, 3, 4, 5, 6};
+    hora_t alarma = {1, 2, 3, 4, 5, 6};
     static const hora_t EXPECTED_ALARM_1 = {1, 2, 3, 4, 5, 6};
     reloj = RelojCreate(TICKS_PER_SECOND, NULL);
-    RelojSetupAlarm(reloj, hora_alarma);
 
+    RelojSetupAlarm(reloj, alarma);
     RelojTogleAlarm(reloj);
 
-    TEST_ASSERT_FALSE(RelojGetAlarm(reloj, hora_alarma));
-    TEST_ASSERT_EQUAL_UINT8_ARRAY(EXPECTED_ALARM_1, hora_alarma, 6);
+    TEST_ASSERT_FALSE(RelojGetAlarm(reloj, alarma));
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(EXPECTED_ALARM_1, alarma, 6);
+}
+
+void test_alarma_suena(void) {
+    clock_t reloj;
+    hora_t hora = {1, 1, 1, 1, 1, 1};
+    hora_t alarma = {1, 2, 3, 4, 5, 6};
+    static const hora_t EXPECTED_ALARM_1 = {1, 2, 3, 4, 5, 6};
+    
+    estado_alarma=false;
+
+    reloj = RelojCreate(TICKS_PER_SECOND, SimulateAlarmHandler);
+
+    RelojSetupAlarm(reloj, alarma);
+    RelojSetupCurrentTime(reloj, hora);
+    SimulateClockTicks(reloj, ONE_DAY);
+
+    TEST_ASSERT_TRUE(estado_alarma);
 }

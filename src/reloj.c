@@ -40,7 +40,7 @@ SPDX-License-Identifier: MIT
 /* === Macros definitions ====================================================================== */
 
 /* === Private data type declarations ========================================================== */
-
+typedef void (*alarm_handler_t)(void);
 /* === Private function declarations =========================================================== */
 
 bool TimeIsValid(hora_t hora);
@@ -54,6 +54,7 @@ struct clock_s {
     bool alarm_enabled;
     uint32_t ticks_count;
     uint32_t ticks_per_second;
+    alarm_handler_t alarm_handler;
 };
 
 /* === Public variable definition  ============================================================= */
@@ -84,8 +85,10 @@ clock_t RelojCreate(uint32_t ticks_per_second, void * alarm_handler) {
     clock_t clock = &instance;
     clock->time_is_valid = false;
     clock->alarm_enabled = false;
+    clock->alarm_status = false;
     clock->ticks_per_second = ticks_per_second;
     clock->ticks_count = 0;
+    clock->alarm_handler = alarm_handler;
     memset(clock->hora_actual, 0, sizeof(hora_t));
     memset(clock->alarma, 0, sizeof(hora_t));
 
@@ -126,6 +129,9 @@ void RelojNewTick(clock_t clock) {
         clock->hora_actual[4] = (segundos % 60) / 10;
         clock->hora_actual[5] = (segundos % 60) % 10;
     }
+    if (memcmp(clock->hora_actual,clock->alarma,sizeof(hora_t))==0) {
+        clock->alarm_handler();
+    }
 }
 
 bool RelojGetAlarm(clock_t clock, hora_t alarma) {
@@ -146,4 +152,5 @@ bool RelojSetupAlarm(clock_t clock, hora_t alarma) {
 void RelojTogleAlarm(clock_t clock) {
     clock->alarm_enabled = !clock->alarm_enabled;
 }
+
 /* === End of documentation ==================================================================== */
