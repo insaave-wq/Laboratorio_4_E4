@@ -68,6 +68,8 @@ bool RelojSetupAlarm(clock_t clock, hora_t alarma);
 
 void RelojNewTick(clock_t clock);
 
+void RelojTogleAlarm(clock_t clock);
+
 /* === End of conditional blocks =================================================================================== */
 
 #ifdef __cplusplus

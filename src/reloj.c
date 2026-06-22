@@ -142,4 +142,8 @@ bool RelojSetupAlarm(clock_t clock, hora_t alarma) {
     }
     return clock->alarm_enabled;
 }
+
+void RelojTogleAlarm(clock_t clock) {
+    clock->alarm_enabled = !clock->alarm_enabled;
+}
 /* === End of documentation ==================================================================== */

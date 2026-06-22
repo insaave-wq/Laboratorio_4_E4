@@ -135,3 +135,16 @@ void test_ajuste_de_hora_invalida(void) {
     TEST_ASSERT_FALSE(RelojSetupCurrentTime(reloj, nueva_hora));
     TEST_ASSERT_FALSE(RelojSetupAlarm(reloj, nueva_alarma));
 }
+
+void test_inhabilitar_alarma(void) {
+    clock_t reloj;
+    hora_t hora_alarma = {1, 2, 3, 4, 5, 6};
+    static const hora_t EXPECTED_ALARM_1 = {1, 2, 3, 4, 5, 6};
+    reloj = RelojCreate(TICKS_PER_SECOND, NULL);
+    RelojSetupAlarm(reloj, hora_alarma);
+
+    RelojTogleAlarm(reloj);
+
+    TEST_ASSERT_FALSE(RelojGetAlarm(reloj, hora_alarma));
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(EXPECTED_ALARM_1, hora_alarma, 6);
+}
