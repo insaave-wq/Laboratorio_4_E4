@@ -159,3 +159,33 @@ void test_alarma_suena(void) {
 
     TEST_ASSERT_TRUE(estado_alarma);
 }
+
+void test_posponer_alarma_diez_segundos(void){
+    clock_t reloj;
+    hora_t hora = {1, 2, 3, 4, 0, 0};
+    hora_t alarma = {1, 2, 3, 4, 1, 0};
+    static const hora_t EXPECTED_ALARM_2 = {1, 2, 3, 4, 1, 0};
+    static const hora_t EXPECTED_ALARM_3 = {1, 2, 3, 4, 2, 0};
+
+    estado_alarma=false;
+
+    reloj = RelojCreate(TICKS_PER_SECOND, SimulateAlarmHandler);
+
+    RelojSetupAlarm(reloj, alarma);
+
+    RelojSetupCurrentTime(reloj, hora);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(EXPECTED_ALARM_2, alarma, 6);
+    
+    SimulateClockTicks(reloj, TEN_SECONDS);
+    TEST_ASSERT_TRUE(estado_alarma);
+    
+    RelojPostposeAlarm(reloj, TEN_SECONDS);
+    
+    estado_alarma=false;
+
+    RelojGetAlarm(reloj, alarma);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(EXPECTED_ALARM_3, alarma, 6);
+
+    SimulateClockTicks(reloj, TEN_SECONDS);
+    TEST_ASSERT_TRUE(estado_alarma);   
+}

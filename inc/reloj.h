@@ -72,6 +72,8 @@ void RelojNewTick(clock_t clock);
 
 void RelojTogleAlarm(clock_t clock);
 
+void RelojPostposeAlarm(clock_t clock, uint32_t ticks);
+
 /* === End of conditional blocks =================================================================================== */
 
 #ifdef __cplusplus

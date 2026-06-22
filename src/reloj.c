@@ -85,7 +85,6 @@ clock_t RelojCreate(uint32_t ticks_per_second, void * alarm_handler) {
     clock_t clock = &instance;
     clock->time_is_valid = false;
     clock->alarm_enabled = false;
-    clock->alarm_status = false;
     clock->ticks_per_second = ticks_per_second;
     clock->ticks_count = 0;
     clock->alarm_handler = alarm_handler;
@@ -153,4 +152,18 @@ void RelojTogleAlarm(clock_t clock) {
     clock->alarm_enabled = !clock->alarm_enabled;
 }
 
+void RelojPostposeAlarm(clock_t clock, uint32_t ticks){
+    uint32_t segundos = clock->alarma[0] * 3600 * 10 + clock->alarma[1] * 3600 +
+                        clock->alarma[2] * 60 * 10 + clock->alarma[3] * 60 + clock->alarma[4] * 10 +
+                        clock->alarma[5] + ticks / clock->ticks_per_second;
+    
+    clock->alarma[0] = (segundos / 3600 % 24) / 10;
+    clock->alarma[1] = (segundos / 3600 % 24) % 10;
+
+    clock->alarma[2] = (segundos / 60 % 60) / 10;
+    clock->alarma[3] = (segundos / 60 % 60) % 10;
+
+    clock->alarma[4] = (segundos % 60) / 10;
+    clock->alarma[5] = (segundos % 60) % 10;
+}
 /* === End of documentation ==================================================================== */
