@@ -148,8 +148,8 @@ void test_alarma_suena(void) {
     hora_t hora = {1, 1, 1, 1, 1, 1};
     hora_t alarma = {1, 2, 3, 4, 5, 6};
     static const hora_t EXPECTED_ALARM_1 = {1, 2, 3, 4, 5, 6};
-    
-    estado_alarma=false;
+
+    estado_alarma = false;
 
     reloj = RelojCreate(TICKS_PER_SECOND, SimulateAlarmHandler);
 
@@ -160,64 +160,79 @@ void test_alarma_suena(void) {
     TEST_ASSERT_TRUE(estado_alarma);
 }
 
-void test_posponer_alarma_diez_segundos(void){
+void test_posponer_alarma_diez_segundos(void) {
     clock_t reloj;
     hora_t hora = {1, 2, 3, 4, 0, 0};
     hora_t alarma = {1, 2, 3, 4, 1, 0};
-    static const hora_t EXPECTED_ALARM_2 = {1, 2, 3, 4, 1, 0};
-    static const hora_t EXPECTED_ALARM_3 = {1, 2, 3, 4, 2, 0};
+    static const hora_t EXPECTED_ALARM_1 = {1, 2, 3, 4, 1, 0};
+    static const hora_t EXPECTED_ALARM_2 = {1, 2, 3, 4, 2, 0};
 
-    estado_alarma=false;
+    estado_alarma = false;
 
     reloj = RelojCreate(TICKS_PER_SECOND, SimulateAlarmHandler);
 
     RelojSetupAlarm(reloj, alarma);
 
     RelojSetupCurrentTime(reloj, hora);
-    TEST_ASSERT_EQUAL_UINT8_ARRAY(EXPECTED_ALARM_2, alarma, 6);
-    
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(EXPECTED_ALARM_1, alarma, 6);
+
     SimulateClockTicks(reloj, TEN_SECONDS);
     TEST_ASSERT_TRUE(estado_alarma);
-    
+
     RelojPostposeAlarm(reloj, TEN_SECONDS);
-    
+
     RelojGetAlarm(reloj, alarma);
-    TEST_ASSERT_EQUAL_UINT8_ARRAY(EXPECTED_ALARM_3, alarma, 6);
-    
-    estado_alarma=false;
-    
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(EXPECTED_ALARM_2, alarma, 6);
+
+    estado_alarma = false;
+
     SimulateClockTicks(reloj, TEN_SECONDS);
     TEST_ASSERT_TRUE(estado_alarma);
 }
 
-void test_posponer_alarma_no_cambia_la_original(void){
+void test_posponer_alarma_no_cambia_la_original(void) {
     clock_t reloj;
     hora_t hora = {1, 2, 3, 4, 0, 0};
     hora_t alarma = {1, 2, 3, 4, 1, 0};
-    static const hora_t EXPECTED_ALARM_4 = {1, 2, 3, 4, 1, 0};
-    
+    static const hora_t EXPECTED_ALARM_1 = {1, 2, 3, 4, 1, 0};
+
     reloj = RelojCreate(TICKS_PER_SECOND, SimulateAlarmHandler);
-    
+
     RelojSetupAlarm(reloj, alarma);
-    
+
     RelojSetupCurrentTime(reloj, hora);
-    
-    estado_alarma=false;
-    
+
+    estado_alarma = false;
+
     SimulateClockTicks(reloj, TEN_SECONDS);
-    
+
     RelojPostposeAlarm(reloj, TEN_SECONDS);
-    
-    estado_alarma=false;
+
+    estado_alarma = false;
 
     SimulateClockTicks(reloj, TEN_SECONDS);
     TEST_ASSERT_TRUE(estado_alarma);
 
-    estado_alarma=false;
+    estado_alarma = false;
 
-    SimulateClockTicks(reloj, ONE_DAY-TEN_SECONDS);
+    SimulateClockTicks(reloj, ONE_DAY - TEN_SECONDS);
     TEST_ASSERT_TRUE(estado_alarma);
 
     RelojGetAlarm(reloj, alarma);
-    TEST_ASSERT_EQUAL_UINT8_ARRAY(EXPECTED_ALARM_4, alarma, 6);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(EXPECTED_ALARM_1, alarma, 6);
+}
+
+void test_alarma_desactivada_no_suena(void) {
+    clock_t reloj;
+    hora_t alarma = {1, 2, 3, 4, 5, 6};
+    static const hora_t EXPECTED_ALARM_1 = {1, 2, 3, 4, 5, 6};
+    reloj = RelojCreate(TICKS_PER_SECOND, SimulateAlarmHandler);
+
+    RelojSetupAlarm(reloj, alarma);
+    RelojTogleAlarm(reloj);
+
+    estado_alarma = false;
+
+    SimulateClockTicks(reloj, ONE_DAY - TEN_SECONDS);
+    TEST_ASSERT_FALSE(estado_alarma);
 }

@@ -45,7 +45,7 @@ typedef void (*alarm_handler_t)(void);
 
 bool RelojTimeIsValid(hora_t hora);
 
-uint32_t RelojGetSegundos(hora_t hora, uint32_t seconds_add );
+uint32_t RelojGetSegundos(hora_t hora, uint32_t seconds_add);
 
 /* === Private variable definitions ============================================================ */
 
@@ -82,13 +82,11 @@ bool RelojTimeIsValid(hora_t hora) {
     return true;
 }
 
-uint32_t RelojGetSegundos(hora_t hora, uint32_t seconds_add){
-        uint32_t segundos = hora[0] * 3600 * 10 + hora[1] * 3600 +
-                   hora[2] * 60 * 10 + hora[3] * 60 + hora[4] * 10 +
-                   hora[5] + seconds_add;
+uint32_t RelojGetSegundos(hora_t hora, uint32_t seconds_add) {
+    uint32_t segundos =
+        hora[0] * 3600 * 10 + hora[1] * 3600 + hora[2] * 60 * 10 + hora[3] * 60 + hora[4] * 10 + hora[5] + seconds_add;
     return segundos;
 }
-
 
 clock_t RelojCreate(uint32_t ticks_per_second, void * alarm_handler) {
     static struct clock_s instance = {0};
@@ -126,7 +124,7 @@ void RelojNewTick(clock_t clock) {
     clock->ticks_count = clock->ticks_count + 1;
     if (clock->ticks_count >= clock->ticks_per_second) {
         uint32_t segundos;
-        segundos = RelojGetSegundos(clock->hora_actual, 0) + 1 ;
+        segundos = RelojGetSegundos(clock->hora_actual, 0) + 1;
 
         clock->ticks_count = 0;
 
@@ -139,16 +137,16 @@ void RelojNewTick(clock_t clock) {
         clock->hora_actual[4] = (segundos % 60) / 10;
         clock->hora_actual[5] = (segundos % 60) % 10;
     }
-    
-    if(clock->alarm_enabled){
-        if (memcmp(clock->hora_actual,clock->alarma,sizeof(hora_t))==0 && clock->alarm_enabled) {
+
+    if (clock->alarm_enabled) {
+        if (memcmp(clock->hora_actual, clock->alarma, sizeof(hora_t)) == 0 && clock->alarm_enabled) {
             clock->alarm_handler();
         }
     }
-    if(clock->alarm_postposed){
+    if (clock->alarm_postposed) {
         memcpy(clock->alarma, alarma_guardada, sizeof(hora_t));
-        clock->alarm_postposed=false;
-    }else{
+        clock->alarm_postposed = false;
+    } else {
         memcpy(alarma_guardada, clock->alarma, sizeof(hora_t));
     }
 }
@@ -172,14 +170,14 @@ void RelojTogleAlarm(clock_t clock) {
     clock->alarm_enabled = !clock->alarm_enabled;
 }
 
-void RelojPostposeAlarm(clock_t clock, uint32_t ticks){
+void RelojPostposeAlarm(clock_t clock, uint32_t ticks) {
     hora_t alarma_anterior;
     uint32_t segundos;
 
     memcpy(alarma_anterior, clock->alarma, sizeof(hora_t));
 
-    segundos= RelojGetSegundos(clock->alarma, ticks/clock->ticks_per_second);
-    
+    segundos = RelojGetSegundos(clock->alarma, ticks / clock->ticks_per_second);
+
     clock->alarma[0] = (segundos / 3600 % 24) / 10;
     clock->alarma[1] = (segundos / 3600 % 24) % 10;
 
@@ -188,7 +186,7 @@ void RelojPostposeAlarm(clock_t clock, uint32_t ticks){
 
     clock->alarma[4] = (segundos % 60) / 10;
     clock->alarma[5] = (segundos % 60) % 10;
-    
-    clock->alarm_postposed=true;
+
+    clock->alarm_postposed = true;
 }
 /* === End of documentation ==================================================================== */
