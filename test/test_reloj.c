@@ -181,11 +181,43 @@ void test_posponer_alarma_diez_segundos(void){
     
     RelojPostposeAlarm(reloj, TEN_SECONDS);
     
-    estado_alarma=false;
-
     RelojGetAlarm(reloj, alarma);
     TEST_ASSERT_EQUAL_UINT8_ARRAY(EXPECTED_ALARM_3, alarma, 6);
+    
+    estado_alarma=false;
+    
+    SimulateClockTicks(reloj, TEN_SECONDS);
+    TEST_ASSERT_TRUE(estado_alarma);
+}
+
+void test_posponer_alarma_no_cambia_la_original(void){
+    clock_t reloj;
+    hora_t hora = {1, 2, 3, 4, 0, 0};
+    hora_t alarma = {1, 2, 3, 4, 1, 0};
+    static const hora_t EXPECTED_ALARM_4 = {1, 2, 3, 4, 1, 0};
+    
+    reloj = RelojCreate(TICKS_PER_SECOND, SimulateAlarmHandler);
+    
+    RelojSetupAlarm(reloj, alarma);
+    
+    RelojSetupCurrentTime(reloj, hora);
+    
+    estado_alarma=false;
+    
+    SimulateClockTicks(reloj, TEN_SECONDS);
+    
+    RelojPostposeAlarm(reloj, TEN_SECONDS);
+    
+    estado_alarma=false;
 
     SimulateClockTicks(reloj, TEN_SECONDS);
-    TEST_ASSERT_TRUE(estado_alarma);   
+    TEST_ASSERT_TRUE(estado_alarma);
+
+    estado_alarma=false;
+
+    SimulateClockTicks(reloj, ONE_DAY-TEN_SECONDS);
+    TEST_ASSERT_TRUE(estado_alarma);
+
+    RelojGetAlarm(reloj, alarma);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(EXPECTED_ALARM_4, alarma, 6);
 }
